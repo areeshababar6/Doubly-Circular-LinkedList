@@ -1,0 +1,280 @@
+#include<iostream>
+using namespace std;
+
+
+class DNode
+{
+private:
+	int data;
+	DNode* next;
+	DNode* prev;
+public:
+	DNode();
+	DNode(int);
+	void setData(int);
+	void setNext(DNode*);
+	void setPrev(DNode*);
+
+	int getData();
+	DNode* getNext();
+	DNode* getPrev();
+};
+DNode::DNode()
+{
+	data = 0;
+	next = 0;
+	prev = 0;
+}
+DNode::DNode(int d)
+{
+	data = d;
+	next = 0;
+	prev = 0;
+}
+void DNode::setData(int d)
+{
+	data = d;
+}
+void DNode::setNext(DNode* n)
+{
+	next = n;
+}
+void DNode::setPrev(DNode* p)
+{
+	prev = p;
+}
+int DNode::getData()
+{
+	return data;
+}
+DNode* DNode::getNext()
+{
+	return next;
+}
+DNode* DNode::getPrev()
+{
+	return prev;
+}
+//------------------------------------
+class DCList
+{
+private:
+	DNode* last;
+	int rRevPrint(DNode * temp);
+	DNode* rRevList(DNode * temp);
+public:
+	DCList();
+	DCList(DNode*);
+
+	void insert(DNode*, DNode*);
+	void insertBetween(DNode*, DNode*, DNode*);
+	void Delete(DNode*);
+	void print();
+
+	void ReversePrint();
+	void RevPrint();
+	void ReverseList();
+	void RevList();
+};
+DCList::DCList()
+{
+	last = NULL;
+}
+DCList::DCList(DNode* p)
+{
+	last = p;
+}
+//----------------------------------------
+void  DCList::insert(DNode* pB, DNode* pN)
+{
+	if (!last)
+	{
+		last = pN;
+		last->setPrev(last);
+		last->setNext(last);
+	}
+	else if (last && pB == last)
+	{
+		pN->setNext(pB->getNext());
+		pB->getNext()->setPrev(pN);
+		pB->setNext(pN);
+		pN->setPrev(pB);
+		last = pN;
+	}
+	else if (last && pB != last)
+	{
+		pN->setNext(pB->getNext());
+		pB->getNext()->setPrev(pN);
+		pB->setNext(pN);
+		pN->setPrev(pB);
+	}
+}
+//-------------------------------
+void DCList::insertBetween(DNode* pB, DNode* pA, DNode* pN)
+{
+	if (pA == pB->getNext())
+	{
+		pN->setNext(pA);
+		pA->setPrev(pN);
+		pB->setNext(pN);
+		pN->setPrev(pB);
+
+		if (pB == last)
+			last = pN;
+	}
+	else
+		cout << " INVALID" << endl;
+}
+//---------------------------
+void DCList::Delete(DNode* pDelete)
+{
+	DNode* temp = last->getNext();
+
+	while (pDelete != temp ->getNext())
+	{
+		temp = temp->getNext();
+	}
+	temp->setNext(pDelete->getNext());
+	pDelete->getNext()->setPrev(temp);
+
+	if (pDelete == last)
+		last = temp;
+
+	delete pDelete;
+}
+//----------------------------------
+void DCList::print()
+{
+	cout << "\n Printing list...\n";
+	DNode* temp = last->getNext();
+	
+	int i = 1;
+	do
+	{
+		cout << " Value of Node " << i << ": " << temp->getData() << endl;
+		temp = temp->getNext();
+		i++;
+	} while (temp != last->getNext());
+}
+//---------------------------------
+void DCList::ReversePrint()
+{
+	DNode* temp = last;
+
+	do
+	{
+		cout << " " << temp->getData();
+
+		if (temp != last->getNext())
+			cout << " ->";
+		temp = temp->getPrev();
+	} while (temp != last);
+}
+//--------------------------------
+void DCList::RevPrint()
+{
+	int d;
+	d = rRevPrint(last->getNext());
+	cout << " " << d << endl;
+}
+int DCList::rRevPrint(DNode* temp)
+{
+	if (temp == last)
+	{
+		return temp->getData();
+	}
+	int d;
+	d = rRevPrint(temp->getNext());
+	cout << " " << d << " ->";
+
+	return temp->getData();
+}
+//-----------------------------------
+void DCList::ReverseList()
+{
+	DNode* bef, * aft, * cur, * first;
+
+	first = last->getNext();
+	aft = NULL;
+	bef = last;
+	cur = first;
+
+	while (aft != first)
+	{
+		aft = cur->getNext();
+		cur->setNext(bef);
+		cur->setPrev(aft);
+
+		bef = cur;
+		cur = aft;
+	}
+	last = aft;
+}
+//-------------------------------
+void DCList::RevList()
+{
+	DNode* d;
+	d = rRevList(last->getNext());
+
+	last->setPrev(d);
+	d->setNext(last);
+	last = d;
+}
+DNode* DCList::rRevList(DNode* temp)
+{
+	if (temp == last)
+	{
+		return temp;
+	}
+	DNode* d;
+	d = rRevList(temp->getNext());
+
+	temp->setPrev(d);
+	d->setNext(temp);
+	return temp;
+}
+//-----------------------------
+int main()
+{
+	DNode* a, * b, * c, * d, * e, *f;
+	a = new DNode(1);
+	b = new DNode(2);
+	c = new DNode(3);
+	d = new DNode(4);
+	e = new DNode(5);
+	f = new DNode(6);
+
+	DCList* list;
+	list = new DCList();
+
+	list->insert(0 , a);
+	list->insert(a , b);
+	list->insert(b , c);
+	list->insert(a , d);
+	list->insert(b, e);
+	list->print();
+	
+	list->Delete(a);
+	cout << "\n After deleting first node" << endl;
+	list->print();
+
+	cout << "\n After calling insertbetween..." << endl;
+	list->insertBetween(b, e, f);
+	list->print();	
+	
+	cout << "\n After calling reverse print iteratively..." << endl;
+	list->ReversePrint();
+
+	cout << "\n After calling reverse print recursively..." << endl;
+	list->RevPrint();
+	
+	cout << "\n After calling reverse list iteratively..." << endl;
+	list->ReverseList();
+	list->print();
+	
+	cout << "\n After calling reverse list recursively..." << endl;
+	list->RevList();
+	list->print();
+
+	return 0;
+}
